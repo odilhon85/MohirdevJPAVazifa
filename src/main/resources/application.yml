@@ -1,0 +1,12 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: odilhon1985
+    url: jdbc:postgresql://localhost:5432/mohirjpavazifadb
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+
