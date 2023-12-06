@@ -1,13 +1,12 @@
-package uz.devior.mohirdev_jpa_vazifa.hr;
+package uz.devior.mohirdev_jpa_vazifa.employee;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uz.devior.mohirdev_jpa_vazifa.shared.Department;
-import uz.devior.mohirdev_jpa_vazifa.shared.Position;
+import uz.devior.mohirdev_jpa_vazifa.department.Department;
+import uz.devior.mohirdev_jpa_vazifa.shared.Role;
 
 @Getter
 @Setter
@@ -21,11 +20,13 @@ public class EmployeeDTO {
 
     private String middleName;
 
+    private String password;
+
     private Integer age;
 
     private String passportSerial;
 
-    private Integer passportNumber;
+    private Long passportNumber;
 
     private Long passportId;
 
@@ -35,9 +36,8 @@ public class EmployeeDTO {
 
     private String address;
 
-    @Enumerated
-    private Department department;
+    private String department;
 
     @Enumerated
-    private Position position;
+    private Role role;
 }

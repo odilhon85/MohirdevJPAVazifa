@@ -1,7 +1,11 @@
-package uz.devior.mohirdev_jpa_vazifa.hr;
+package uz.devior.mohirdev_jpa_vazifa.employee;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uz.devior.mohirdev_jpa_vazifa.department.Department;
+import uz.devior.mohirdev_jpa_vazifa.department.DepartmentRepository;
+import uz.devior.mohirdev_jpa_vazifa.security.jwt.JwtService;
 import uz.devior.mohirdev_jpa_vazifa.shared.ApplicationResponse;
 
 import java.util.List;
@@ -13,6 +17,9 @@ import java.util.Optional;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    private final DepartmentRepository departmentRepository;
     public ApplicationResponse<?> addEmployee(EmployeeDTO employeeDTO) {
 
         boolean existedByPassportId = employeeRepository.existsByPassportId(employeeDTO.getPassportId());
@@ -23,10 +30,22 @@ public class EmployeeService {
                     .build();
         }
 
+        Department department;
+        if(departmentRepository.existsByName(employeeDTO.getDepartment())){
+            department = departmentRepository.findByName(employeeDTO.getDepartment()).get();
+        }else{
+            return ApplicationResponse.builder()
+                    .message("Department with this name is not exists")
+                    .success(false)
+                    .build();
+        }
+
         Employee employee = new Employee();
         employee.setFirstName(employeeDTO.getFirstName());
         employee.setLastName(employeeDTO.getLastName());
         employee.setMiddleName(employeeDTO.getMiddleName());
+        employee.setPassword(passwordEncoder.encode(employeeDTO.getPassword()));
+        employee.setUsername(employeeDTO.getPassportId());
         employee.setAge(employeeDTO.getAge());
         employee.setPassportSerial(employeeDTO.getPassportSerial());
         employee.setPassportNumber(employeeDTO.getPassportNumber());
@@ -34,12 +53,15 @@ public class EmployeeService {
         employee.setNationality(employeeDTO.getNationality());
         employee.setSalary(employeeDTO.getSalary());
         employee.setAddress(employeeDTO.getAddress());
-        employee.setDepartment(employeeDTO.getDepartment());
-        employee.setPosition(employeeDTO.getPosition());
-        employeeRepository.save(employee);
+        employee.setDepartment(department);
+        employee.setRole(employeeDTO.getRole());
+        Employee saved = employeeRepository.save(employee);
+
+        var token = jwtService.generateToken(saved);
         return ApplicationResponse.builder()
                 .message("New employee saved")
                 .success(true)
+                .data(Map.of("token", token))
                 .build();
     }
 
@@ -61,6 +83,16 @@ public class EmployeeService {
                     .build();
         }
 
+        Department department;
+        if(departmentRepository.existsByName(employeeDTO.getDepartment())){
+            department = departmentRepository.findByName(employeeDTO.getDepartment()).get();
+        }else{
+            return ApplicationResponse.builder()
+                    .message("Department with this name is not exists")
+                    .success(false)
+                    .build();
+        }
+
         Employee updatedEmployee = employee.get();
         updatedEmployee.setFirstName(employeeDTO.getFirstName());
         updatedEmployee.setLastName(employeeDTO.getLastName());
@@ -72,12 +104,15 @@ public class EmployeeService {
         updatedEmployee.setNationality(employeeDTO.getNationality());
         updatedEmployee.setSalary(employeeDTO.getSalary());
         updatedEmployee.setAddress(employeeDTO.getAddress());
-        updatedEmployee.setDepartment(employeeDTO.getDepartment());
-        updatedEmployee.setPosition(employeeDTO.getPosition());
-        employeeRepository.save(updatedEmployee);
+        updatedEmployee.setDepartment(department);
+        updatedEmployee.setRole(employeeDTO.getRole());
+        Employee saved = employeeRepository.save(updatedEmployee);
+
+        var token = jwtService.generateToken(saved);
         return ApplicationResponse.builder()
                 .message("Employee updated")
                 .success(true)
+                .data(Map.of("token", token))
                 .build();
     }
 

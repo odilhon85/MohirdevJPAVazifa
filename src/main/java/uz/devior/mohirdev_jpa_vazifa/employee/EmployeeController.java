@@ -1,4 +1,4 @@
-package uz.devior.mohirdev_jpa_vazifa.hr;
+package uz.devior.mohirdev_jpa_vazifa.employee;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +7,7 @@ import uz.devior.mohirdev_jpa_vazifa.shared.ApplicationResponse;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping("/api/v1")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
