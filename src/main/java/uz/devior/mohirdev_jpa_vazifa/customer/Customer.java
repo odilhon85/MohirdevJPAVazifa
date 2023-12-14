@@ -1,12 +1,14 @@
 package uz.devior.mohirdev_jpa_vazifa.customer;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import uz.devior.mohirdev_jpa_vazifa.employee.Employee;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -38,13 +40,16 @@ public class Customer {
     @Column(nullable = false)
     private String address;
 
+    @Column(nullable = false)
+    private Boolean archived;
 
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     @Column(nullable = false)
     @CreatedDate
-    private LocalDate date;
+    private LocalDateTime date;
 
     @ManyToOne
     @JoinColumn(name = "employee_id")
+    @JsonIgnore
     private Employee employee;
 }

@@ -8,7 +8,18 @@ spring:
     url: jdbc:postgresql://localhost:5432/mohirjpavazifadb
   jpa:
     hibernate:
-      ddl-auto: create-drop
-      dialect: org.hibernate.dialect.PostgreSQLDialect
-      show-sql: true
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/application.log
 

@@ -70,9 +70,11 @@ public class Employee implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "employee")
+    @JsonIgnore
     private List<Customer> customerList;
 
     @OneToMany(mappedBy = "employee")
+    @JsonIgnore
     private List<Expense> expenseList;
 
     @Override

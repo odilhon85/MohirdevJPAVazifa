@@ -19,4 +19,6 @@ public class CustomerDTO {
     private Long passportNumber;
     private Long passportId;
     private String address;
+    private Long employeeId;
+    private Boolean archived;
 }

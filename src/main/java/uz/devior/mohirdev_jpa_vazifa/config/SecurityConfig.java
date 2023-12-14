@@ -12,8 +12,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import uz.devior.mohirdev_jpa_vazifa.security.jwt.JwtAuthenticationFilter;
 
 import static org.springframework.http.HttpMethod.*;
-import static uz.devior.mohirdev_jpa_vazifa.shared.Permission.DEPARTMENT_HEAD_DELETE;
-import static uz.devior.mohirdev_jpa_vazifa.shared.Permission.DIRECTOR_DELETE;
+import static uz.devior.mohirdev_jpa_vazifa.shared.Permission.*;
 import static uz.devior.mohirdev_jpa_vazifa.shared.Role.*;
 
 @Configuration
@@ -29,36 +28,38 @@ public class SecurityConfig {
         return http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                                .requestMatchers(
-                                        "/swagger-ui/**",
-                                        "/v3/api-docs/**",
-                                        "api/auth/**").permitAll()
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "api/auth/**").permitAll()
 
-                                .requestMatchers(
-                                        "api/v1/employee/**",
-                                        "api/v1/customer/**"
-                                ).hasAnyRole(DIRECTOR.name(), DEPARTMENT_HEAD.name(), EMPLOYEE.name())
+                        .requestMatchers(
+                                "api/v1/employee/*",
+                                "api/v1/customer/*",
+                                "api/v1/expense/*"
+                        ).hasAnyRole(DIRECTOR.name(), DEPARTMENT_HEAD.name(), EMPLOYEE.name())
 
-                                .requestMatchers("api/v1/department/**")
-                                .hasRole(DIRECTOR.name())
+                        .requestMatchers("api/v1/department/**")
+                        .hasRole(DIRECTOR.name())
 
-                                .requestMatchers(DELETE, "api/v1/employee/**")
-                                .hasAuthority(DIRECTOR_DELETE.name())
+                        .requestMatchers(DELETE, "api/v1/employee/**")
+                        .hasAuthority(DIRECTOR_DELETE.name())
 
-                                .requestMatchers(DELETE, "api/v1/customer/**")
-                                .hasAnyAuthority(DIRECTOR_DELETE.name(), DEPARTMENT_HEAD_DELETE.name())
+                        .requestMatchers(DELETE, "api/v1/customer/**")
+                        .hasAnyAuthority(DIRECTOR_DELETE.name(), DEPARTMENT_HEAD_DELETE.name())
 
+                        .requestMatchers(DELETE, "api/v1/expense/**")
+                        .hasAnyAuthority(DIRECTOR_DELETE.name(), DEPARTMENT_HEAD_DELETE.name())
 
-//                        .requestMatchers("api/v1/admin/**").hasRole(ADMIN.name())
-//                        .requestMatchers(GET,"api/v1/admin/**").hasAuthority(ADMIN_READ.name())
-//                        .requestMatchers(POST,"api/v1/admin/**").hasAuthority(ADMIN_CREATE.name())
-//                        .requestMatchers(PUT,"api/v1/admin/**").hasAuthority(ADMIN_UPDATE.name())
-//                        .requestMatchers(DELETE,"api/v1/admin/**").hasAuthority(ADMIN_DELETE.name())
-//
-//                        .requestMatchers("api/v1/user/**").hasAnyRole(ADMIN.name(), USER.name())
-//                        .requestMatchers(POST,"api/v1/user/**").hasAnyAuthority(USER_CREATE.name())
-//                        .requestMatchers(PUT,"api/v1/user/**").hasAnyAuthority(USER_UPDATE.name())
-//                        .requestMatchers(DELETE,"api/v1/user/**").hasAnyAuthority(USER_DELETE.name())
+                        .requestMatchers(GET, "api/v1/expense/stat/**")
+                        .hasAnyAuthority(DIRECTOR_READ.name(), DEPARTMENT_HEAD_READ.name())
+
+                        .requestMatchers(GET, "api/v1/employee/stat/**")
+                        .hasAnyAuthority(DIRECTOR_READ.name(), DEPARTMENT_HEAD_READ.name())
+
+                        .requestMatchers(GET, "api/v1/customer/stat/**")
+                        .hasAnyAuthority(DIRECTOR_READ.name(), DEPARTMENT_HEAD_READ.name())
+
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider).addFilterBefore(

@@ -7,6 +7,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import uz.devior.mohirdev_jpa_vazifa.employee.Employee;
+import uz.devior.mohirdev_jpa_vazifa.shared.Role;
 
 import java.security.Key;
 import java.util.Date;
@@ -37,8 +39,11 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateToken(UserDetails userDetails){
-        return generateToken(new HashMap<>(), userDetails);
+    public String generateToken(Employee user){
+        HashMap<String, Object> map =  new HashMap<>();
+        map.put("role",user.getRole());
+        map.put("department",user.getDepartment().getName());
+        return generateToken(map, user);
     }
 
     public String generateToken(
@@ -47,10 +52,10 @@ public class JwtService {
     ){
         return Jwts
                 .builder()
-                .addClaims(extraClaims)
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24))
+                .addClaims(extraClaims)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

@@ -1,6 +1,9 @@
 package uz.devior.mohirdev_jpa_vazifa.employee;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.devior.mohirdev_jpa_vazifa.department.Department;
@@ -8,6 +11,7 @@ import uz.devior.mohirdev_jpa_vazifa.department.DepartmentRepository;
 import uz.devior.mohirdev_jpa_vazifa.security.jwt.JwtService;
 import uz.devior.mohirdev_jpa_vazifa.shared.ApplicationResponse;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -161,6 +165,51 @@ public class EmployeeService {
         employeeRepository.delete(employee.get());
         return ApplicationResponse.builder()
                 .message("Employee with ID:"+id+" was successfully deleted")
+                .success(true)
+                .build();
+    }
+
+    public ApplicationResponse<?> getAllByDepartment() {
+        List<Department> departments = departmentRepository.findAll();
+        HashMap<String, HashMap<Integer, Double>> employeeByDepart = new HashMap<>();
+        Long totalEmployee = employeeRepository.count();
+        departments.forEach(department -> {
+            Integer number = employeeRepository.countEmployeeByDepartment(department);
+            HashMap<Integer, Double> numberAndPercentage = new HashMap<>();
+            numberAndPercentage.put(number, (double) ((number*100)/totalEmployee));
+            employeeByDepart.put(department.getName(),numberAndPercentage);
+        });
+
+        return ApplicationResponse.builder()
+                .message("Ok")
+                .data(Map.of("Employee by department",employeeByDepart))
+                .success(true)
+                .build();
+    }
+
+    public ApplicationResponse<?> getAllByAge(Sort sort) {
+        List<Employee> allByAge = employeeRepository.findAll(sort);
+        return ApplicationResponse.builder()
+                .message("Ok")
+                .data(Map.of("Employee by age",allByAge))
+                .success(true)
+                .build();
+    }
+
+    public ApplicationResponse<?> getAllPagination(Pageable pageable) {
+        Page<Employee> all = employeeRepository.findAll(pageable);
+        return ApplicationResponse.builder()
+                .message("Ok")
+                .data(Map.of("Employee pagination",all))
+                .success(true)
+                .build();
+    }
+
+    public ApplicationResponse<?> getAllSumma() {
+        Double summa = employeeRepository.sumOfSalary();
+        return ApplicationResponse.builder()
+                .message("Ok")
+                .data(Map.of("Summa of salary",summa))
                 .success(true)
                 .build();
     }
