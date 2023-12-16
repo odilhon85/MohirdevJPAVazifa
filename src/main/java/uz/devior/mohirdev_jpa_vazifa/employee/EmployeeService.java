@@ -1,6 +1,7 @@
 package uz.devior.mohirdev_jpa_vazifa.employee;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
@@ -62,6 +64,7 @@ public class EmployeeService {
         Employee saved = employeeRepository.save(employee);
 
         var token = jwtService.generateToken(saved);
+        log.info("POST: New employee added: "+saved.getPassportId());
         return ApplicationResponse.builder()
                 .message("New employee saved")
                 .success(true)
@@ -111,7 +114,7 @@ public class EmployeeService {
         updatedEmployee.setDepartment(department);
         updatedEmployee.setRole(employeeDTO.getRole());
         Employee saved = employeeRepository.save(updatedEmployee);
-
+        log.info("UPDATE: Employee edited: "+saved.getPassportId());
         var token = jwtService.generateToken(saved);
         return ApplicationResponse.builder()
                 .message("Employee updated")
@@ -130,6 +133,7 @@ public class EmployeeService {
                     .success(false)
                     .build();
         }
+        log.info("GET: All employees get");
         return ApplicationResponse.builder()
                 .message("Ok")
                 .data(Map.of("Employees",all))
@@ -146,6 +150,7 @@ public class EmployeeService {
                     .success(false)
                     .build();
         }
+        log.info("GET: Get employee by ID:"+id);
         return ApplicationResponse.builder()
                 .message("Ok")
                 .data(Map.of("Employee",employee))
@@ -163,6 +168,7 @@ public class EmployeeService {
                     .build();
         }
         employeeRepository.delete(employee.get());
+        log.info("DELETE: Employee deleted ID:"+id);
         return ApplicationResponse.builder()
                 .message("Employee with ID:"+id+" was successfully deleted")
                 .success(true)
@@ -179,7 +185,7 @@ public class EmployeeService {
             numberAndPercentage.put(number, (double) ((number*100)/totalEmployee));
             employeeByDepart.put(department.getName(),numberAndPercentage);
         });
-
+        log.info("GET: All employees by department");
         return ApplicationResponse.builder()
                 .message("Ok")
                 .data(Map.of("Employee by department",employeeByDepart))
@@ -189,6 +195,7 @@ public class EmployeeService {
 
     public ApplicationResponse<?> getAllByAge(Sort sort) {
         List<Employee> allByAge = employeeRepository.findAll(sort);
+        log.info("GET: All employees by age");
         return ApplicationResponse.builder()
                 .message("Ok")
                 .data(Map.of("Employee by age",allByAge))
@@ -198,6 +205,7 @@ public class EmployeeService {
 
     public ApplicationResponse<?> getAllPagination(Pageable pageable) {
         Page<Employee> all = employeeRepository.findAll(pageable);
+        log.info("GET: All employees by pagination");
         return ApplicationResponse.builder()
                 .message("Ok")
                 .data(Map.of("Employee pagination",all))
@@ -207,6 +215,7 @@ public class EmployeeService {
 
     public ApplicationResponse<?> getAllSumma() {
         Double summa = employeeRepository.sumOfSalary();
+        log.info("GET: Summa of salary"+summa);
         return ApplicationResponse.builder()
                 .message("Ok")
                 .data(Map.of("Summa of salary",summa))
